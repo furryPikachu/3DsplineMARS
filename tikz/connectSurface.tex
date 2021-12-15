@@ -1,0 +1,99 @@
+\documentclass{minimal} % say
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+\usetikzlibrary{patterns} 
+% 绘图所需的TikZ子库
+ \usetikzlibrary{hobby}
+\usetikzlibrary{decorations.markings}
+ \tikzset{equally spaced dots/.style={postaction={decorate,
+       decoration={markings,% switch on markings 
+         mark=% actually add a mark
+         between positions 0 and 1 step 0.9999/#1
+         with
+         {
+           \node[circle,fill,inner sep=0pt](c-\pgfkeysvalueof{/pgf/decoration/mark info/sequence number}){};
+         }
+       }}}}
+\usepackage[active,tightpage]{preview} 
+% 用了preview之后你生成的pdf文件都可以直接用`\includegraphics`命令加入文本中
+\PreviewEnvironment{tikzpicture}
+\setlength\PreviewBorder{2mm} % 边距
+\begin{document}
+\begin{tikzpicture}
+  % \coordinate (a) at (0,0);
+  \path (0,0) node(a) {}
+   (2,2) node(b){}
+   (3,-2) node(c){}
+  (7,3) node(d){};
+\filldraw [dashed]
+(a) circle (2pt) node[below] {$a$} --
+(b) circle (2pt) node[above] {$b$} -- 
+(c) circle (2pt) node[below] {$c$} --
+(d) circle (2pt) node[above] {$d$}-- (b);
+\draw [dashed] (a) -- (c) ;
+\draw [thick, cyan, fill= blue!50,opacity=0.3]
+(0,0) to [out=90,in=180] (2,2)
+  to [out=-85,in=120] (3,-2) to [out=170,in=-50] (0,0);
+  \draw [thick, cyan, fill= green!50,opacity=0.3](2,2)to [out=30,in=170](7,3)
+  to [out=-110,in=30](3,-2) to [out=60,in=-20](2,2);
+
+  
+  \draw [equally spaced dots=21]
+  (2,2)to [out=-85,in=120] (3,-2);
+   \tikzset{equally spaced dots/.style={postaction={decorate,
+       decoration={markings,% switch on markings 
+         mark=% actually add a mark
+         between positions 0 and 1 step 0.9999/#1
+         with
+         {
+           \node[circle,fill,inner sep=0pt](a-\pgfkeysvalueof{/pgf/decoration/mark info/sequence number}){};
+         }
+       }}}}
+ \draw [equally spaced dots=21] (2,2)to [out=-20,in=60] (3,-2);
+
+ \tikzset{equally spaced dots/.style={postaction={decorate,
+       decoration={markings,% switch on markings 
+         mark=% actually add a mark
+         between positions 0 and 1 step 0.9999/#1
+         with
+         {
+           \node[circle,fill,inner sep=0pt](b-\pgfkeysvalueof{/pgf/decoration/mark info/sequence number}){};
+         }
+       }}}}
+ \draw [equally spaced dots=11] (2,2)-- (3,-2);
+ 
+  \foreach \i in {2,...,21}{
+    \draw[red, opacity=0.3] (c-\i) -- (a-\i);
+  }
+
+
+  \node at (2,0){$\gamma_1$};
+  \node at (3.5,1){$\gamma_2$};
+\end{tikzpicture}
+
+% \usetikzlibrary{hobby}
+% \usetikzlibrary{decorations.markings}
+% \tikzset{equally spaced dots/.style={postaction={decorate,
+%       decoration={markings,% switch on markings 
+%         mark=% actually add a mark
+%         between positions 0 and 1 step 0.9999/#1
+%         with
+%         {
+%           \node[circle,fill,inner sep=1pt](c-\pgfkeysvalueof{/pgf/decoration/mark info/sequence number}){};
+%         }
+%       }}}}
+
+
+
+% \begin{tikzpicture}
+%   \draw[equally spaced dots=5] (0,0) (0,0) to[curve through={(6,4) .. (4,9) .. (1,7)}]
+%   (3 ,5);
+%   \draw[red] (c-2) -- (c-4);
+% \end{tikzpicture}
+
+
+\end{document}
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
