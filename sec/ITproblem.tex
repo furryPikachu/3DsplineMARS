@@ -1,0 +1,34 @@
+
+\section{界面追踪问题}
+利用殷空间\cite{zhang2018fourth}的概念描述界面追踪问题。
+\begin{defn}[界面追踪问题]
+  \label{IT}
+  用一个殷集$\mathcal{M}(t) \in \mathbb{Y}$表示被追踪物质$M$在$t$时刻所处区域，
+  由初始条件$\mathcal{M}(t_0)$和给定流速场$\boldsymbol{u}(\boldsymbol{x},t)(t\in [t_0,T])$
+  确定$\mathcal{M}(T)$的问题称为界面追踪问题。
+\end{defn}
+为了度量界面追踪的精度，利用\cite{zhang2018fourth}中度量(2.10)定义误差
+\begin{equation}
+  \label{eq:geomError}
+  E_1(t_n) := \|\mathcal{M}(t_n) \oplus
+  \mathcal{M}^{n}\| = \sum_{{\mathcal C}\subset \Omega}
+  \left\|\mathcal{M}_{\mathcal C}(t_n) \oplus
+    \mathcal{M}_{\mathcal C}^{n}\right\|,
+\end{equation}
+其中，$\mathcal{M}(t_n)$表示$t_n$时刻精确流体区域，
+$\mathcal{M}^{n}$是$\mathcal{M}(t_n)$的一个近似，
+所有控制体$\mathcal{C}$的集合形成计算域$\Omega$的一个划分。
+
+\begin{defn}[界面追踪方法的精度]
+  数值求解界面追踪问题(定义\ref{IT})，称一个界面追踪方法$\mathcal{L}_{IT}$
+  \begin{equation}
+    \label{eq:ITM}
+    \mathcal{M}^{n+1}=\mathcal{L}_{IT}(\mathcal{M}(t_n),\boldsymbol{u})\approx \mathcal{M}(t_{n+1}),
+  \end{equation}
+  在$1-$范数下有$\beta$阶精度，若
+  \begin{displaymath}
+    E_1(T) = O(k^{\beta})(k \to 0).
+  \end{displaymath}
+  称$\mathcal{L}_{IT}$是一致的，若$\beta > 0$．
+\end{defn}
+

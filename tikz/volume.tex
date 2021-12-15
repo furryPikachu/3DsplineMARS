@@ -1,0 +1,60 @@
+\documentclass{minimal} % say
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+\usetikzlibrary{patterns} 
+% 绘图所需的TikZ子库
+\usepackage[active,tightpage]{preview} 
+% 用了preview之后你生成的pdf文件都可以直接用`\includegraphics`命令加入文本中
+\PreviewEnvironment{tikzpicture}
+\setlength\PreviewBorder{2mm} % 边距
+\begin{document}
+\begin{tikzpicture}
+  \draw [fill= green!50,opacity=0.4]
+  (0,0) .. controls (1,1.5) and (1.5,1) .. (3,0);
+  \draw [fill= blue!50,opacity=0.3]
+  (0,0) .. controls (0,1) and (1,1) .. (3,0);
+  \filldraw[fill= white,opacity=1] (0,0) .. controls
+  (0.5,0.5) and (1,1) .. (3,0);
+  \node[scale=.6][above] at (2,-.4){$T$};
+  \node[scale=.6] at (-.1,0.65){$\gamma_1$};
+  \node[scale=.6] at (1.2,0.4){$\beta$};
+  \node[scale=.6][above] at (1.5,.92){$\gamma_2$};
+  \node[scale=.5][right] at (3,0){$b$};\node[scale=.5][left] at (0,0){$a$};
+  \filldraw (0,0) circle [radius =.5pt]
+  (3,0) circle [radius =.5pt];
+  \draw   (0.3,0.65) circle [radius =.8pt]
+  (0.8,0.53) circle [radius =.8pt]
+  (0.6,0.0) circle [radius =.8pt]
+ (.99,.92) circle [radius =.8pt];
+ \node[scale=.5][above] at (0.3,0.65){$p_1$};
+  \node[scale=.5][above] at (.99,.92){$p_2$};
+  \node[scale=.5][below] at (0.8,0.53){$q$};
+   \node[scale=.5][above] at (0.6,0.0){$p$};
+   \draw (0,0)--(2.2,-.5) -- (3,0)--(0,0);
+   \draw[ pattern=north west lines]
+   (0.3,0.65)--(0.8,0.53) --  (.99,.92)--(0.3,0.65);
+   \draw[gray,pattern=north west lines]
+   (1.37,.65) --(1.69,0.5)-- (1.8,.77)--(1.37,.65);
+  \draw (0.3,0.65) -- (.99,.92);
+  \draw[gray] (0.18,.55) -- (.63,.73);
+  \draw[gray] (0.09,.45) -- (.54,.65);
+  \draw[gray] (0.05,.35) -- (.4,.53);
+  \draw[gray] (0.03,.25) -- (.27,.37);
+  \draw[gray] (0.015,.12) -- (.17,.24);
+  \draw[gray] (.8,.75) -- (1.5,.9);
+  \draw[gray] (1.37,.65) -- (1.8,.77);
+  \draw[gray] (1.75,.55) -- (2.09,.61);
+  \draw[gray] (2.0,.45) -- (2.3,.47);
+  \draw[gray] (2.25,.35) -- (2.45,.37);
+  \draw[gray] (2.45,.25) -- (2.6,.27);
+  \draw(0,0) .. controls (1,1.5) and (1.5,1) .. (3,0);
+   \draw (0,0) .. controls (0,1) and (1,1) .. (3,0);
+  % \draw[pattern=north west lines, pattern color=blue]
+  %                (0,0) .. controls (0,1) and (1,1) .. (3,0);
+\end{tikzpicture}
+
+\end{document}
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

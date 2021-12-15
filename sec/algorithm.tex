@@ -1,0 +1,408 @@
+
+%\begin{verbatim}
+%分析
+%\end{verbatim}
+
+\begin{defn}[三维界面追踪的高阶MARS方法]\label{defn:algorithm}
+  令相邻示踪点的距离范围为$[r_\textmd{tiny}h_L,h_L].$
+在每一个时间步$[t_n,t_n+k]$中,
+三维界面追踪的高阶MARS方法
+以$t_n$时刻殷集边界$\partial {\cal M}(t_n)$
+的一组近似曲面片作为输入,
+通过以下步骤得到对$\partial {\cal M}(t_n+k)$近似
+的一组三次多项式曲面片$\partial {\cal M}^{n+1}$
+作为界面追踪结果：
+  \begin{enumerate}[{(SplineMARS}-1)]
+    \setlength{\itemsep}{0pt} \setlength{\parsep}{0pt}
+    \setlength{\parskip}{0pt}
+  \item
+    对$\partial\mathcal{M}(t_n)$上的示踪点,由流速场$\mathbf{u}$得到这些
+    示踪点在$t_n+k$时刻的位置，记为$\{p_j\}$.
+  \item 检查每一个三角形，若$\triangle_{p_i p_j p_k}$存在一条或一条以上
+    的边大于上界$h_L$,　
+    \begin{enumerate}[(a)]
+    \item
+      在$\partial\mathcal{M}^n$上定位
+      $\triangle_{p_i p_j p_k}$的顶点原像
+      $\overleftarrow{p_i},\overleftarrow{p_j},\overleftarrow{p_k}$,
+    \item  将三角形$\triangle_{\overleftarrow{p_i}
+        \overleftarrow{p_j}\overleftarrow{p_k}}$中
+      大于上界$h_L$的边等分为
+      $\lceil\frac{\lVert p_j-p_{j+1}\rVert_2}{h_L}\rceil $段，
+      计算输入的$\partial\mathcal{M}^n$曲面片上的对应点
+      并标记为新的示踪点，
+    \item  将$\overleftarrow{p_i},　\overleftarrow{p_j},　
+      \overleftarrow{p_k}$的star上的点
+      以及新的示踪点投影在三角形平面上，
+      构建一个新的局部三角剖分，
+    \item 将新的局部三角剖分关系更新到整体的三角剖分网格中，
+    \item
+      由流速场$\mathbf{u}$
+     % 求解常微分方程$\frac{\text{d}\mathbf{x}}{\text{d}t}=\mathbf{u}$
+      得到这些新的示踪点在$t_n+k$时刻的位置并加入到顶点序列$\{p_j\}$中。
+    \end{enumerate}
+    重复以上步骤直到所有三角形边长都不大于上界$h_L$。
+  \item 检查每个三角形，若$\triangle_{p_i p_j p_k}$的面积小
+    于$\frac{r_{\textmd{tiny}} \cdot h_L^2}{2}$：
+    \begin{enumerate}
+    \item
+      若三角形$\triangle_{p_i p_j p_k}$中有两条或以上的边小
+      于$r_\textmd{tiny}h_L$, 将该三角形缩成一个点；
+    \item
+      若三角形$\triangle_{p_i p_j p_k}$仅有一边小
+      于$r_\textmd{tiny}h_L$,将该边缩成一个点；
+    \item
+      若三角形$\triangle_{p_i p_j p_k}$三条边都符合标准，用换边法优化网
+      格，若无法优化则将三角形的最小边缩成一个点。
+    \end{enumerate}
+  \item 得到一个新的三角剖分信息，用这个三角剖分构造一个新的曲面。
+  \item （可选）若需要可视化曲面，
+    用三角剖分信息构造全局光滑的曲面作为输出。
+  \end{enumerate}
+\end{defn}
+
+\begin{rem}
+  在上述算法中，$h_L$和$r_{\textmd{tiny}}$都是由用户指定的，$h_L$为界面
+  追踪的物理尺度。为了避免示踪点数量的无限增长，指
+  定$r_{\textmd{tiny}}h_L$和$\frac{r_{\textmd{tiny}} \cdot h_L^2}{2}$分
+  别为示踪点距离和面积的下界。由于相邻点过近时的计算几何中的鲁棒性问题%看文章
+  $r_{\textmd{tiny}}$不能过小；为了防止频繁加减点导致的计算效率下
+  降，$r_{\textmd{tiny}}$不能过大。
+\end{rem}
+
+
+\begin{figure}[H]
+  \centering
+  \subfigure[$\mathcal{M}^n$边界上示踪点向前移动一个时间步.]{
+    \includegraphics[width=0.45\linewidth]{pst/perform1}
+  }
+  \hfill
+  \subfigure[通过在$\mathcal{M}^n$边界上增加示踪点确保$\mathcal{M}^{n+1}$边界上相邻示踪点的距离不超过上界$h_L$.]{
+    \includegraphics[width=0.45\linewidth]{pst/perform2}
+  }
+  \hfill
+  \subfigure[通过换边优化确保$\mathcal{M}^{n+1}$边界的三角剖分中三角形的面积不低于下界$\frac{r_{\rm{tiny}}h_{L}^2}{2}$.]{
+    \includegraphics[width=0.45\linewidth]{pst/perform3}
+  }
+  \hfill
+  \subfigure[通过将边或三角形缩为一点确保$\mathcal{M}^{n+1}$边界的三角剖分中三角形的面积不低于下界$\frac{r_{\rm{tiny}}h_{L}^2}{2}$且相邻示踪点的距离不低于下界$r_{\rm{tiny}}h_L$.]{
+    \includegraphics[width=0.5\linewidth]{pst/perform4}
+  }
+  \label{fig:algorithm}
+\end{figure}
+
+
+\begin{rem}
+  在近似殷集边界$\partial {\cal M}(t_n)$
+  的一组在顶点$C^0$连续，
+  在三角形边界不连续的三次三角曲面片中，
+  每一个三角剖分的三角形边对应两个不同三角曲面片边界，
+  即两条空间三次曲线
+  $\vec{\gamma}_1(t),\vec{\gamma}_2(t)
+  : \mathbb{R}^1\rightarrow \mathbb{R}^3,
+  0\leq t\leq 1.$
+  将两条曲线对应的点$\vec{\gamma}_1(t_0),\vec{\gamma}_2(t_0)$
+  用直线段连接，
+  直线段上一点$\vec{p}$可以用参数表示为
+  \begin{displaymath}
+    \vec{p}(s)=(1-s)\vec{\gamma}_1(t_0)+s\vec{\gamma}_2(t_0)
+    \quad s\in [0,1].
+  \end{displaymath}
+  因此两个相邻曲面片连接处的曲面可以表示为二元四次的多项式向量函数
+    \begin{displaymath}
+    \vec{p}(t,s)=(1-s)\vec{\gamma}_1(t)+s\vec{\gamma}_2(t)
+    \quad s,t\in [0,1].
+  \end{displaymath}
+  三维四阶MARS算法中的离散流映射
+  $\mathring{\varphi}:\mathbb{S}^3_4\rightarrow \mathbb{S}^3_4 $。
+  其中离散流映射作用的半代数集合${\cal P}\in \mathbb{S}^3_4$
+  的边界$\partial {\cal P}$是由一组二元三次三角面片
+  以及连接三角曲面片的的二元四次曲面构成的闭合$C^0$曲面。
+\end{rem}
+
+\begin{rem}
+  注意到$t_n+k$时刻同一个三角面片构造所用的插值点不一定是
+  $t_n$时刻对应的点映射所得到的。
+  我们可以把算法中（MSRS-2）所对应的在$t_n$时刻加示踪点的操作
+  视为预处理(augment)算子$\psi_n$，
+  把$t_{n+1}$时刻算法中（MSRS-3）减去示踪点，
+  和寻找构造曲面片所用的插值点的操作视为调整(adjustment)算子$\chi.$
+  考虑MARS方法$t_{n+1}$时刻前的映射
+  \begin{equation}
+    \widetilde{{\cal M}}^n\stackrel{\chi}{\longrightarrow}
+    {\cal M}^n\xlongrightarrow{\varphi_{t_n}^k\circ\psi_n}
+    \widetilde{{\cal M}}^{n+1}\xlongrightarrow{\chi}{\cal M}^{n+1}.
+  \end{equation}
+  其中$\partial\widetilde{{\cal M}}^{n+1}$的三角曲面片所用的
+  拟合节点是由$\partial {\cal M}^n$上对应节点映射得到的。
+\end{rem}
+\subsection{误差分析}
+
+\begin{thm}\cite{zhang2016mars}[MARS误差控制]
+  MARS框架下的界面追踪误差由下式控制：
+   \begin{equation}
+    E_1(t_n)\leq E^{AUG}+E^{ADJ}+E^{MAP}+E^{REP}+E^{ODE}.
+  \end{equation}
+\end{thm}
+
+\begin{prop}
+  $\kappa$阶精度的半离散流映射$\mathring{\phi}$满足
+  \begin{equation}
+    \label{eq:1}
+    \forall {\cal P} \in \mathbb{S}^3,\quad
+    \lVert \mathring{\phi}^k_{t_n}({\cal P})\oplus
+    \phi^k_{t_n}({\cal P})\rVert \leq O(k^{\kappa +1}).
+  \end{equation}
+\end{prop}
+\begin{pro}
+  见[MARS]\cite{zhang2016mars}性质3.6。
+\end{pro}
+
+\subsubsection{映射误差$E^{\textmd{MAP}}$}
+\label{sec:拟合误差}
+
+
+
+\begin{lem}\label{lem:maperror}
+  用离散流映射$\varphi:\mathbb{S}^3_4(\triangle)\rightarrow
+ \mathbb{S}^3_4(\triangle)$逼近半离散流映射$\mathring{\phi}$.
+ 若流速场光滑，
+ $\mathring{\phi}$是$\kappa$阶精度的。
+  则对任意的${\cal P}\in \mathbb{S}^3_4$,有
+  \begin{equation}\label{equ:dis-semi}
+    \lVert \varphi^k_{t_n}({\cal P})\oplus
+    \mathring{\phi}^k_{t_n}({\cal P})\rVert
+    \leq O(kh^4_{L,{\cal P}}+k^{\kappa +1}).
+  \end{equation}
+\end{lem}
+
+\begin{pro}
+  对三角剖分$\triangle$中三角形$T$,
+  令点$p $是$T$中一点对应
+  的$ \partial {\cal P}$上的一个点。
+  对$t_n+k$时刻三角形$T$三个顶点
+  $\phi^k_{t_n}(p_1),\phi^k_{t_n}(p_2),
+  \phi^k_{t_n}(p_3)$插值、
+  对点$\phi^k_{t_n}(p_4),...,\phi^k_{t_n}(p_M)$
+  插值或最小二乘拟合得到的近似曲面
+  $\vec{f}(\mathbf{x})=\sum_{i=1}^{N}
+  (\sum_{j=1}^Mb_{ij}\phi^k_{t_n}(p_j))B_i(\mathbf{x}).$
+  其中对三次样条基函数有$N=10,M\geq N.$
+  由数值实验知，
+  曲面片$\vec{f}(p)$对光滑曲面的拟合有四阶精度，
+  即，设$\vec{g}(p)$是任意经过点$p_1,...,p_N$
+  的光滑曲面，%C^3连续？需要测试
+  则$\lVert \vec{g}(p)-\vec{f}(p)\rVert =O(h_L^4).$
+  \begin{equation}
+    \label{eq:2}
+    \begin{aligned}
+   \left\lVert\varphi^k_{t_n}(p)-\mathring{\phi}^k_{t_n}(p)
+     \right\rVert &=\left\lVert
+     \sum_{j=1}^M\left(\sum_{i=1}^{N}
+       b_{ij}B_i\left(\varphi^k_{t_n}(p)\right)\right)
+     \mathring{\phi}^k_{t_n}(p_j)
+    -\mathring{\phi}^k_{t_n}(p) \right\rVert\\
+    &=\left\lVert
+      \sum_{j=1}^M\left(\sum_{i=1}^{N}b_{ij}B_i
+        \left(\varphi^k_{t_n}(p)\right)\right)
+      \phi^k_{t_n}(p_j)-\phi^k_{t_n}(p)\right\rVert
+    +O(k^{\kappa+1})\\
+    &=\left\lVert
+      \vec{f}(\varphi^k_{t_n}(p))-\phi^k_{t_n}(p)\right\rVert
+    +O(k^{\kappa+1})\\
+    &=O(h_L^4)+O(k^{\kappa+1}).
+  \end{aligned}
+\end{equation}
+又因为对于给定的$h_L$，由$\mathring{\phi}$和$B_i$的连续性有
+$$\lim_{k\rightarrow 0}\left\lVert
+  \varphi^k_{t_n}(p)-\mathring{\phi}^k_{t_n}(p)
+\right\rVert = \left\lVert
+  \sum_{i=1}^{N}(\sum_{j=1}^Mb_{ij}p_j)B_i(p)-p\right\rVert=0.$$
+所以误差$\left\lVert \varphi^k_{t_n}(p)
+-\mathring{\phi}^k_{t_n}(p)\right\rVert$
+或者$\left\lVert
+      \vec{f}(\phi^k_{t_n}(p))-\phi^k_{t_n}(p)\right\rVert$
+必然是时间相关的。
+又
+\begin{equation}
+  \vec{f}(\phi^k_{t_n}(p))-\phi^k_{t_n}(p)
+    =\sum_{i=1}^{N}\tilde{c}_iB_i\left(\varphi^k_{t_n}(p)\right)
+    -p+p-\phi^k_{t_n}(p)
+    = \sum_{i=1}^{N}\tilde{c}_iB_i\left(p\right) -\sum_{i=1}^{N}c_iB_i(p)
+    +p-\phi^k_{t_n}(p).
+\end{equation}
+其中，第一个等式中$\tilde{c}_i=\sum_{j=1}^{M}b_{ij}\phi^k_{t_n}(p_j),$
+第二个等号后面$c_i$是$t_n$时刻$\partial {\cal P}$的局部插值系数，
+即对$p_1,p_2,\ldots,p_M$插值的三次曲面的插值基函数系数。
+第二个等式中假定映射之后点$\varphi^k_{t_n}(p)$
+在投影平面上的三角形重心坐标和映射之前的$p$重心坐标相同。
+又由中值定理得到
+\begin{equation}\label{equ:timeError}
+  \left\lVert \phi^k_{t_n}(p)-p\right\rVert
+  = \left\lVert \int_{t_0}^{t_0+k}
+    \frac{\partial \phi}{\partial \tau}\textmd{d}\tau\right\rVert
+  =O(k).
+\end{equation}
+定义
+\begin{equation}
+    \widetilde{\mathbf{B}}:=\left[B_1(\phi^k_{t_n}(p_j)),\ldots,B_N(\phi^k_{t_n}(p_j))\right]_{j=1}^{M},\quad
+  \mathbf{B}:=\left[B_1(p_j),\ldots,B_N(p_j)\right]_{j=1}^{M}.
+\end{equation}
+由类似式子(\ref{equ:timeError})中关系，
+$\phi^k_{t_n}(p_j)$的三角形重心坐标和$p_j$的重心坐标也有$O(k)$的误差。
+根据基函数$B_j$的定义，
+可以把矩阵$ \widetilde{\mathbf{B}}$表示为$\mathbf{B}+O(k)\mathbf{D}.$
+定义
+\begin{equation}
+  \mathbf{c}=\left[c_1,\ldots,c_N\right]^{T},\quad
+  \widetilde{\mathbf{c}}=\left[\widetilde{c}_1,\ldots,
+    \widetilde{c}_N\right]^{T};\quad
+  \mathbf{p}=\left[p_1,\ldots,p_M\right]^{T},\quad
+\widetilde{\mathbf{p}}=\left[\phi^k_{t_n}(p_1),\ldots,
+    \phi^k_{t_n}(p_M)\right]^{T}.
+\end{equation}
+则可以得到$\widetilde{\mathbf{p}}= \mathbf{p}+O(k)\mathbf{e}$,
+$\widetilde{\mathbf{B}}\widetilde{\mathbf{c}}=\widetilde{\mathbf{p}}$,
+$\mathbf{B}\mathbf{c}=\mathbf{p}.$
+由于
+\begin{displaymath}
+  \begin{aligned}
+    \left[\mathbf{B}+O(k)\mathbf{D}\right]   \widetilde{\mathbf{c}}
+    &=\mathbf{p}+O(k)\mathbf{e}\Rightarrow
+    \left[\mathbf{I}+O(k)\mathbf{B}^{-1}\mathbf{D}\right]
+    \widetilde{\mathbf{c}}=\mathbf{c}+O(k) \mathbf{B}^{-1}\mathbf{e}
+    \Rightarrow \widetilde{\mathbf{c}}-\mathbf{c}
+    =O(k)\left(\mathbf{B}^{-1}\mathbf{e}-
+      \mathbf{B}^{-1}\mathbf{D}\mathbf{\widetilde{c}}\right),\\
+  \end{aligned}
+\end{displaymath}
+我们有$\left\lVert\sum_{i=1}^{N}\tilde{c}_iB_i\left(p\right)
+  -\sum_{i=1}^{N}c_iB_i(p)\right\rVert=O(k),$
+注意其中如果$M>N$则在等式两边同时乘以$B^T,$
+用$(B^TB)^{-1}$即可($B$列满秩)。
+因此误差精度可以被提高为
+\begin{equation}
+ \left\lVert\varphi^k_{t_n}(p)-\mathring{\phi}^k_{t_n}(p)
+     \right\rVert=O(kh_K^4)+O(k^{\kappa+1}).
+   \end{equation}
+由积分中值定理和下面关系
+\begin{equation}
+  \label{eq:constant}
+\lVert \partial {\cal P}\rVert = O(\lVert {\cal P}\rVert )
+\end{equation}
+可得(\ref{equ:dis-semi}).
+\end{pro}
+
+\begin{prop}\label{lem:e_map}
+  $E^{\textmd{MAP}}(t_n)=O(h_L^4+k^\kappa)$.
+\end{prop}
+\begin{pro}
+根据引理\ref{lem:maperror}和下面的式子（参见(4.17)[MARS]）
+\begin{equation}
+  E^{\textmd{MAP}}(t_n)\leq c_k\sum_{j=1}^{n}\left\lVert
+    {\cal E}^\textmd{MAP}_{j-1}\right \rVert.
+\end{equation}
+其中$n=O\left(\frac{1}{k}\right),c_k=O(1).$
+  
+\end{pro}
+
+\subsubsection{后处理误差$E^{\textmd{ADJ}}$}
+
+
+\begin{prop}
+  $E^{\textmd{ADJ}}(t_n)=O(h_L^4).$
+\end{prop}
+\begin{pro}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{images/share}
+    \label{fig:share}
+  \end{figure}
+ 后处理算子把靠的太近的点去掉，
+ 在对应的三角形上用$t_{n+1}$时刻更新的三角剖分中的
+ 距离三角形重心最近的样本点组插值。
+ 考虑经过$t_{n+1}$时刻所有的示踪点的一个光滑曲面${\cal S}$.
+ 由插值的误差精度可知，
+ 光滑曲面${\cal S}$和
+ $\partial\widetilde{{\cal M}}^{n+1}$上对应点的误差是$O(h_L^4)$,
+  光滑曲面${\cal S}$和
+  $\partial{\cal M}^{n+1}$上对应点的误差也是$O(h_L^4).$
+  由积分中值定理得$\left\lVert\widetilde{{\cal M}}^{n+1}\oplus \chi
+  \widetilde{{\cal M}}^{n+1}\right\rVert=O(h_L^4)$.
+在文章[MARS]引理4.11\cite{zhang2016mars}中指出，
+这一误差也和时间步长$k$相关，
+且可以被进一步提高到$O(kh_L^4).$
+所以，
+\begin{equation}
+  E^{\textmd{ADJ}}(t_n)\leq c_k\sum_{j=1}^{n}\left\lVert
+    {\cal E}^\textmd{ADJ}_{j-1}\right \rVert=O(h_L^4).
+\end{equation}
+\end{pro}
+
+\subsubsection{表示误差$E^\textmd{REP}$、预处理误差$E^\textmd{AUG}$
+  和时间积分误差$E^\textmd{ODE}$}
+\label{sec:rep,aug,ode}
+\begin{prop}
+  若半离散映射$\mathring{\phi}$是$\kappa$阶精度的，那么
+  $E^{\textmd{ODE}}(t_n)=O(k^\kappa).$
+\end{prop}
+\begin{pro}
+  见推论4.8[MARS]\cite{zhang2016mars}.
+\end{pro}
+
+\begin{prop}
+  $E^{\textmd{AUG}}(t_n)=0.$
+\end{prop}
+\begin{pro}
+  由算法定义，减去示踪点不改变曲面表示。
+\end{pro}
+
+
+\begin{prop}\label{prop:errorREP}
+  任何MARS方法，
+  如果用算法\ref{defn:algorithm}中构造的$\mathbb{S}^3_4(\triangle)$曲面
+  表示至少$C^4$连续的初始界面，
+  也就是${\cal M}^0\in \mathbb{S}^3_4(\triangle)$,
+  那么$ E^{REP}(t_n)=O(h_L^4)$.
+\end{prop}
+
+\begin{pro}
+  对于任意一个三角剖分$\triangle$中的三角形$T$，
+  三角形内部任意点对应样条函数上点和初始曲面对应点距离差$O(h_L^4)$.
+  对三角形边界上任意点，把点看做原来二元插值三次样条上点，
+  插值曲面上近似点和初始点距离差$O(h_L^4).$
+  那么三角形对应的局部体积差是$O(h_L^6).$
+  
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.35\linewidth]{tikz/volume}
+    \label{fig:volume}
+  \end{figure}  
+  考虑三角曲面片连接处的体积。
+  考虑三角剖分三角形边$\overline{ab}$对应参数$s\in[0,1]$,
+  线段上一点$p=(1-s)a+sb$，
+  对应两个曲面片边界上点$p_1,p_2$，初始曲面上点$q$
+  两个曲面片边界表示$\gamma_1(s),\gamma_2(s)$,
+  初始曲面对应曲线$\beta(s)$.
+  对所有参数$s$,
+  直线段连接三个点，
+  组成体积的边界。
+  $\beta(s)$上点$q$两个曲面片$\gamma_1(s),\gamma_2(s)$上点$p_1,p_2$,
+  组成体积的三角形横截面。
+  三角形$\triangle_{qp_1p_2}$的面积是$O(h_L^8)$的，
+  则局部连接处体积$O(h_L^9)$.
+  又因为所有的三角剖分中三角形个数是$O(\frac{1}{h_L^2})$,
+  则所有连接处体积和是$O(h_L^7)$,
+  那么
+  \begin{displaymath}
+    E^{REP}(t_n)=\lVert \phi^{nk}_{t_0}({\cal M}(t_0))\oplus
+  \phi^{nk}_{t_0}({\cal M})\rVert
+  =\lVert {\cal M}(t_0)\oplus{\cal M}^0\rVert(1+O(kn))
+  =O(h_L^6)O(\frac{1}{h_L^2})+O(h_L^7)=O(h_L^4).
+  \end{displaymath}
+\end{pro}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

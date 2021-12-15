@@ -1,0 +1,129 @@
+
+\section{MARS方法\cite{zhang2016mars}}
+
+在界面追踪（IT）问题当中，我们通常得到一个先验的速度场
+$\mathbf{u}(\mathbf{x},t),$
+每个流体相通过这个速度场推进，对应的常微分方程如下：
+\begin{equation}
+\label{volEquation}
+\frac{\mathrm{d}\, \mathbf{x}}{\mathrm{d}\, t}=\mathbf{u}(\mathbf{x},t),
+\end{equation}
+若速度场$\mathbf{u}(\mathbf{x},t)$对时间$t$连续，
+在空间$\mathbb{R}^{\textup{D}}$上Lipschitz连续，
+则其存在唯一解。由解的唯一性可得流映射 $\phi: \mathbb{R}^{\textup{D}}\times \mathbb{R}\times\mathbb{R}\rightarrow \mathbb{R}^{\text{D}}$.
+\begin{equation} 
+\label{eq:tracing}
+\renewcommand{\arraystretch}{1.3}
+\left\{
+\begin{array}{l}
+\phi_{t_0}^{+k}(p) := p(t_0+k) 
+= p(t_0) + \int_{t_0}^{t_0+k} \mathbf{u}(p(t),t)\,\mathrm{d}\, t,
+\\
+\phi_{t_0}^{-k}(p) := p(t_0-k) 
+= p(t_0) + \int_{t_0}^{t_0-k} \mathbf{u}(p(t),t)\,\mathrm{d}\,t.
+\end{array}
+\right.
+\end{equation}
+将流映射推广到任意点集有：
+\begin{displaymath}
+\phi_{t_0}^{\pm k}({\mathcal M})  
+= \{\phi_{t_0}^{\pm k}(p) : p\in {\mathcal M}\}.
+\end{displaymath}
+% 记 $\overleftarrow{M}:=\phi_{t_0+k}^{-k}(M)$, $\overrightarrow{M}:=\phi_{t_0}^{+k}(M)$, 
+% 其中$t_0$表示当前时刻，$k$表示时间步间隔。
+
+\begin{defn}
+	一个半离散流映射$\mathring{ \phi} : \mathbb{S}^{\textup{D}}\rightarrow \mathbb{S}^{\textup{D}}$
+	是用一个一致的时间积分方法求解\eqref{volEquation}式得到的精确流映射$\phi$的近似．
+	称$\mathring{ \phi}_{t_0}^{nk}$在时间上是$\kappa$阶精度的，
+	若对于任意的$p(t_0)\in \mathbb{R}^{\textup{D}}$, $t_0+nk\leq T$，
+	有$\mathring{ \phi}_{t_0}^{nk}=\phi_{t_0}^{nk}(p)+O(k^{\kappa})$.
+\end{defn}
+\begin{defn}
+	一个离散流映射$\varphi : \mathbb{S}_q^{\textup{D}}\rightarrow\mathbb{S}_q^{\textup{D}}$
+	是半离散流映射$\mathring{ \phi}$的近似，由以下两步所得，
+	\begin{enumerate}
+		\item 把$\mathring{ \phi}$作用到边界$\mathcal{P}$的顶点（$0$-单形）上；
+		\item 构造一个$\mathring{ \phi}(\partial\mathcal{P})$的多项式与$\partial \mathcal{P}$同胚。
+		当$q=1$时，在二维情况下，边界由相连的直线近似；
+		在三维情况下，边界由多个三角平面组成的多面体来近似。
+	\end{enumerate}
+\end{defn}
+
+\begin{defn}
+	\label{defn:MARS}
+	MARS方法是具有以下形式的界面追踪方法
+	\begin{equation*}
+	\label{eq:interfaceTrackingMethod}
+	{\mathcal M}^{n+1}={\mathfrak L}_{\mathrm{Mars}}^n {\mathcal M}^n
+	:= \left(\chi_{n+1}\circ\varphi_{t_n}^k\circ\psi_n
+	\right){\mathcal M}^n,
+	\end{equation*}
+	其中$\mathcal{M}^n\in\mathbb{Y}$ 是$\mathcal{M}(t_n)\in\mathbb{Y}$的近似，
+	$\varphi:\mathbb{Y}\rightarrow
+	\mathbb{Y}$ 是\eqref{eq:tracing}式中$\phi$的离散流映射， 
+	$\psi_n:\mathbb{Y}\rightarrow \mathbb{Y}$是预处理算子，
+	$\chi_{n+1}:\mathbb{Y}\rightarrow \mathbb{Y}$是后处理算子。
+\end{defn}
+
+\begin{defn}
+  考虑一种MARS方法，
+  其中映射操作$\varphi$根据精确的映射$\phi$
+  在时间上离散化后得到$\mathring{ \phi}$,
+  再在空间上离散$\mathring{ \phi}$得到。
+  MARS方法在$t_n=t_0+nk$时刻的
+  时间积分误差$E^{\mathrm{ODE}}(t_n),$
+  表示误差$E^{\mathrm{REP}}(t_n),$
+  扩充误差$E^{\mathrm{AUG}}(t_n),$
+  映射误差$E^{\mathrm{MAP}}(t_n),$
+  以及调整误差$E^{\mathrm{ADJ}}(t_n)$分别如下：
+  \begin{equation}\label{defn:error}
+    \left\{
+      \begin{array}{rl}
+	E^{\mathrm{ODE}}(t_n) &:= \| \phi_{t_0}^{nk}(\mathcal{M}^0) \oplus \mathring{ \phi}_{t_0}^{nk}(\mathcal{M}^0) \|;\\[0.2cm]
+	E^{\mathrm{REP}}(t_n) &:= \| \phi_{t_0}^{nk}(\mathcal{M}(t_0)) \oplus  \phi_{t_0}^{nk}(\mathcal{M}^0) \|;\\[0.2cm]
+	\varepsilon_i^{\mathrm{AUG}} &:=  ( \psi_i \mathcal{M}^i )\oplus \mathcal{M}^i, \\[0.2cm]
+	E^{\mathrm{AUG}}(t_n) &:= \| \oplus_{j=0}^{n-1} \mathring{ \phi}_{t_j}^{(n-j)k}\varepsilon_j^{\mathrm{AUG}} \|;\\[0.2cm]
+	\varepsilon_i^{\mathrm{MAP}}(t_n)& := \mathring{ \phi}_{t_i}^k(\psi_i\mathcal{M}^i)\oplus \varphi_{t_i}^k(\psi_i\mathcal{M}^i),\\[0.2cm]
+	E^{\mathrm{MAP}}(t_n) &:=  \| \oplus_{j=1}^n \mathring{ \phi}_{t_j}^{(n-j)k}\varepsilon_{j-1}^{\mathrm{MAP}} \|;\\[0.2cm]
+	\varepsilon_{i+1}^{\mathrm{ADJ}} &:= (\varphi_{t_i}^k\psi_i\mathcal{M}^i)\oplus\mathcal{M}^{i+1},\\[0.2cm]
+	E^{\mathrm{ADJ}}(t_n) &:= \| \oplus_{j=1}^n\mathring{ \phi}_{t_j}^{(n-j)k}\varepsilon_j^{\mathrm{ADJ}}\|.\\[0.2cm]
+      \end{array}\right.
+  \end{equation}
+  $\varepsilon_i^{\mathrm{AUG}}$, $\varepsilon_i^{\mathrm{MAP}}$, $\varepsilon_{i+1}^{\mathrm{ADJ}}$称为第$i$个时间步的误差区域。
+\end{defn}
+这里$E^{\mathrm{ODE}}$是用半离散流映射$\mathring{ \phi}$近似精确流映射$\phi$造成的误差，
+$E^{\mathrm{REP}}$是在初始时刻用半代数集表示流相的误差，
+$E^{\mathrm{AUG}}$是扩充半代数集的累计误差，
+$E^{\mathrm{MAP}}$是用映射操作近似半离散流映射的累计误差，
+$E^{\mathrm{ADJ}}$是调整半代数集的像的累计误差。
+
+\begin{thm}
+定义\ref{defn:MARS}中的MARS方法是殷空间上的三个算子的复合，
+通过\eqref{defn:error}式定义的各类单一误差以及对每个算子的分析，
+得MARS方法的整体误差满足：
+ \begin{equation}
+\label{eq:E1parts}
+E_1(t_n)  \le E^{\mathrm{ODE}} + E^{\mathrm{MAP}}
++ E^{\mathrm{REP}} + E^{\mathrm{AUG}} + E^{\mathrm{ADJ}}.
+\end{equation}
+这里的 $E^{\mathrm{ODE}},$$E^{\mathrm{MAP}},$
+$E^{\mathrm{REP}},$ $E^{\mathrm{AUG}},$$E^{\mathrm{ADJ}}$
+均由\eqref{defn:error}给出。
+\end{thm}
+
+\begin{pro}
+  见\cite{zhang2016mars}． 
+\end{pro}
+
+\begin{prop}
+  \label{ODEerror}
+  如果一个MARS方法的半离散流映射$\mathring{ \phi}$有$\kappa$阶精度，
+  则对任意$t_n = t_0 + nk(k = O(\frac{1}{n}))$有
+  \begin{displaymath}
+    E^{\rm{ODE}}(t_n) = O(k^{\kappa}).
+  \end{displaymath}
+\end{prop}
+\begin{pro}
+  见\cite{zhang2016mars}．
+\end{pro}
