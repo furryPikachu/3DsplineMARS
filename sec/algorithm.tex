@@ -120,6 +120,12 @@
   以及连接三角曲面片的的二元四次曲面构成的闭合$C^0$曲面。
 \end{rem}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.3\linewidth]{tikz/connectSurface}
+    \label{fig:connect}
+  \end{figure}
+
 \begin{rem}
   注意到$t_n+k$时刻同一个三角面片构造所用的插值点不一定是
   $t_n$时刻对应的点映射所得到的。
@@ -137,6 +143,9 @@
   拟合节点是由$\partial {\cal M}^n$上对应节点映射得到的。
 \end{rem}
 \subsection{误差分析}
+\begin{rem}
+  下面假定界面在光滑流场$\mathbf{u}$的作用下不会产生$C^1$不连续点。
+\end{rem}
 
 \begin{thm}\cite{zhang2016mars}[MARS误差控制]
   MARS框架下的界面追踪误差由下式控制：
@@ -224,7 +233,7 @@ $$\lim_{k\rightarrow 0}\left\lVert
       \vec{f}(\phi^k_{t_n}(p))-\phi^k_{t_n}(p)\right\rVert$
 必然是时间相关的。
 又
-\begin{equation}
+\begin{equation}\label{eq:k}
   \vec{f}(\phi^k_{t_n}(p))-\phi^k_{t_n}(p)
     =\sum_{i=1}^{N}\tilde{c}_iB_i\left(\varphi^k_{t_n}(p)\right)
     -p+p-\phi^k_{t_n}(p)
@@ -315,7 +324,7 @@ $\mathbf{B}\mathbf{c}=\mathbf{p}.$
 \begin{pro}
   \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\linewidth]{images/share}
+    \includegraphics[width=0.7\linewidth]{fig/share}
     \label{fig:share}
   \end{figure}
  后处理算子把靠的太近的点去掉，
@@ -325,19 +334,87 @@ $\mathbf{B}\mathbf{c}=\mathbf{p}.$
  由插值的误差精度可知，
  光滑曲面${\cal S}$和
  $\partial\widetilde{{\cal M}}^{n+1}$上对应点的误差是$O(h_L^4)$,
-  光滑曲面${\cal S}$和
+  光滑曲面${\cal S}^{n+1}$和
   $\partial{\cal M}^{n+1}$上对应点的误差也是$O(h_L^4).$
   由积分中值定理得$\left\lVert\widetilde{{\cal M}}^{n+1}\oplus \chi
-  \widetilde{{\cal M}}^{n+1}\right\rVert=O(h_L^4)$.
-在文章[MARS]引理4.11\cite{zhang2016mars}中指出，
-这一误差也和时间步长$k$相关，
-且可以被进一步提高到$O(kh_L^4).$
-所以，
+    \widetilde{{\cal M}}^{n+1}\right\rVert=O(h_L^4)$.
+  
+令${\cal I}$是恒等映射，
+考虑当$k\rightarrow 0,\chi \rightarrow {\cal I},$
+所以$\left\lVert\widetilde{{\cal M}}^{n+1}\oplus \chi
+    \widetilde{{\cal M}}^{n+1}\right\rVert=0$.
+  因此后处理误差也和时间步长$k$相关，
+  下面证明误差可以被进一步提高到$O(kh_L^4).$
+  
+  在$t_{n+1}$时刻，
+  考虑三角剖分$\triangle$的一个三角形$T$.
+  设$\chi$作用之前的曲面$\widetilde{{\cal M}}^{n+1}$
+  上对应三角形$T$的插值或最小二乘拟合得到的近似曲面
+   $\vec{f}(\mathbf{x})=\sum_{i=1}^{N}
+   (\sum_{j=1}^{M}b_{ij}\varphi^k_{t_n}(p_j))B_i(\mathbf{x});$
+    设$\chi$作用后的曲面${\cal M}^{n+1}$
+  上对应三角形$T$的插值或最小二乘拟合得到的近似曲面
+   $\vec{g}(\mathbf{x})=\sum_{i=1}^{N}
+   (\sum_{j=1}^{M}a_{ij}\varphi^k_{t_n}(q_j))B_i(\mathbf{x})$,
+   其中
+   $\{\varphi^k_{t_n}(q_j)\}_{j=1}^M$是后处理算子作用后的曲面拟合样本点。
+   设$p_0,q_0$分别是曲面$\widetilde{{\cal M}}^{n+1},
+   {\cal M}^{n+1}$上的一点,
+   且$p_0,q_0$在三角形$T$上重心坐标相同。
+  
+  考虑$t_n$时刻过所有示踪点的光滑曲面${\cal S}^n,$
+  ${\cal S}^n$上点$o$在$t_n$时刻三角形$T$上对应坐标和$p_0,q_0$相同。
+  易知，
+  存在光滑同胚$h^1(t,\mathbf{x}),0\leq t\leq k$, 且
+  \begin{displaymath}
+  h^1(0)={\cal S}^{n},h^1(k)={\cal S}_1^{n+1},
+  h^1(k,\mathbf{x}(o))=p_0, h^1(0,\mathbf{x}(p_j))=p_j,
+  h^1(k,\mathbf{x}(p_j))=\varphi^k_{t_n}(p_j),1\leq j\leq M;
+\end{displaymath}
+ 光滑同胚$h^2(t,\mathbf{x}),0\leq t\leq k$, 且
+  \begin{displaymath}
+  h^2(0)={\cal S}^{n},h^2(k)={\cal S}_2^{n+1},
+  h^2(k,\mathbf{x}(o))=q_0, h^2(0,\mathbf{x}(q_j))=q_j,
+  h^2(k,\mathbf{x}(q_j))=\varphi^k_{t_n}(q_j),1\leq j\leq M.
+\end{displaymath}
+由插值唯一性或者拟合多项式对约束条件唯一，有
+\begin{displaymath}
+  \vec{f}(p)=\sum_{i=1}^{N}\tilde{c}_iB_i(p);\quad
+  \vec{g}(p)=\sum_{i=1}^{N}\tilde{d}_iB_i(p),
+\end{displaymath}
+其中$\{\tilde{c}_i\}$是对$p_0,\{\varphi^k_{t_n}(p_j)\}_{j=1}^{M-1}$
+的拟合曲面基函数系数，
+$\{\tilde{d}_i\}$是对$p_0,\{\varphi^k_{t_n}(q_j)\}_{j=1}^{M-1}$
+的拟合曲面基函数系数。
+
+ 设$c_i$是$t_n$时刻对
+  $o,p_1,\ldots,p_{M-1}$
+  插值或拟合的三次曲面的基函数系数；
+  $d_i$是$t_n$时刻对
+  $o,q_1,\ldots,q_{M-1}$
+  插值或拟合的三次曲面的基函数系数。
+  那么，$o=\sum_{i=0}^{M-1}c_iB_i(o)=\sum_{i=0}^{M-1}d_iB_i(o).$
+  类似引理\ref{lem:maperror}中对式子(\ref{eq:k})的证明过程，
+  用光滑映射$h^1(k,\mathbf{x}(p)),h^2(k,\mathbf{x}(p))$
+  代替流映射$\phi_{t_n}^{t_n+k}(p)$，有
+  \begin{displaymath}
+    \vec{f}(p_0)-o=\sum_{i=1}^{N}\tilde{c}_iB_i(p_0)
+    -\sum_{i=0}^{M-1}c_iB_i(o)=O(k);
+    \quad \vec{g}(q_0)-o=\sum_{i=1}^{N}\tilde{d}_iB_i(q_0)
+   -\sum_{i=0}^{M-1}d_iB_i(o) =O(k).
+  \end{displaymath}
+  因此有$\lVert p_0-q_0\rVert=O(k),$
+  误差精度被提高到$\lVert p_0-q_0\rVert=O(kh_L^4),$
+  即$\left\lVert\widetilde{{\cal M}}^{n+1}\oplus \chi
+    \widetilde{{\cal M}}^{n+1}\right\rVert=O(kh_L^4)$.
+
+所以
 \begin{equation}
   E^{\textmd{ADJ}}(t_n)\leq c_k\sum_{j=1}^{n}\left\lVert
     {\cal E}^\textmd{ADJ}_{j-1}\right \rVert=O(h_L^4).
 \end{equation}
 \end{pro}
+
 
 \subsubsection{表示误差$E^\textmd{REP}$、预处理误差$E^\textmd{AUG}$
   和时间积分误差$E^\textmd{ODE}$}
