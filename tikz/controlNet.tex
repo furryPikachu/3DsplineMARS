@@ -1,0 +1,66 @@
+\documentclass{minimal} % say
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+\usetikzlibrary{patterns} 
+% 绘图所需的TikZ子库
+ \usetikzlibrary{hobby}
+\usetikzlibrary{decorations.markings}
+ \tikzset{equally spaced dots/.style={postaction={decorate,
+       decoration={markings,% switch on markings 
+         mark=% actually add a mark
+         between positions 0 and 1 step 0.9999/#1
+         with
+         {
+           \node[circle,fill,inner sep=0pt](c-\pgfkeysvalueof{/pgf/decoration/mark info/sequence number}){};
+         }
+       }}}}
+\usepackage[active,tightpage]{preview} 
+% 用了preview之后你生成的pdf文件都可以直接用`\includegraphics`命令加入文本中
+\PreviewEnvironment{tikzpicture}
+\usetikzlibrary {calc}
+\setlength\PreviewBorder{2mm} % 边距
+\begin{document}
+\begin{tikzpicture}
+
+\fill [green] ($(2,.5)$) circle (2pt)
+($(1,1)$) circle (2pt)
+($(-.5,.7)$) circle (2pt)
+($(-2,-.7)$) circle (2pt)
+ ($(-1,-1.5)$) circle (2pt)
+ ($(.7,-.7)$) circle (2pt);
+ \draw ($(2,.5)$) --($(0,0)$)--
+ ($(1,1)$)--($(-.5,.7)$)--($(0,0)$)--
+($(-2,-.7)$)-- ($(-1,-1.5)$) --($(0,0)$)--
+($(.7,-.7)$)--($(2,.5)$)--($(1,1)$)--($(-.5,.7)$)--($(-2,-.7)$)
+--($(-1,-1.5)$)--($(.7,-.7)$);
+
+\draw ($(-.5,.7)$)--($(0.3,1.4)$)-- ($(1,1)$);
+\draw ($(.7,-.7)$)--($(2.5,-.1)$)--($(2,.5)$);
+\draw ($(-1,-1.5)$)--($(-2.5,-2)$)--($(-2,-.7)$);
+\fill [green] ($(2,.5)$) circle (2pt)
+($(1,1)$) circle (2pt)
+($(-.5,.7)$) circle (2pt)
+($(-2,-.7)$) circle (2pt)
+ ($(-1,-1.5)$) circle (2pt)
+ ($(.7,-.7)$) circle (2pt);
+ \fill [blue] ($(0,0)$) circle (2pt);
+ \fill [red] ($(0.3,1.4)$) circle (2pt);
+ \fill [red] ($(-2.5,-2)$) circle (2pt);
+ \fill [red] ($(2.5,-.1)$) circle (2pt);
+ \node[scale=.9] [above] at($(0.3,1.4)$) {$b_{0,3,0}$};
+ \node[scale=.9] [left] at ($(-2.5,-2)$) {$b_{3,0,0}$};
+ \node[scale=.9] [right] at ($(2.5,-.1)$) {$b_{0,3,0}$};
+ \node[scale=.9] [below] at($(0.4,0)$) {$b_{1,1,1}$};
+ \node[scale=.9] [below] at($(-1,-1.5)$) {$b_{2,1,0}$};
+ \node[scale=.9] [below] at ($(.7,-.7)$)  {$b_{1,2,0}$};
+ \node[scale=.9] [right] at ($(1,1)$) {$b_{0,1,2}$};
+ \node[scale=.9] [right] at ($(2,.5)$) {$b_{0,2,1}$};
+ \node[scale=.9] [left] at ($(-.5,.7)$) {$b_{1,0,2}$};
+ \node[scale=.9] [left] at ($(-2,-.7)$) {$b_{2,0,1}$};
+\end{tikzpicture}
+
+\end{document}
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

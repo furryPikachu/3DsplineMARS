@@ -1,6 +1,6 @@
 XELATEX = xelatex --shell-escape
 
-all : volume.pdf connectSurface.pdf
+all : volume.pdf connectSurface.pdf controlNet.pdf
 
 %.pdf : %.tex
 	$(XELATEX) $<

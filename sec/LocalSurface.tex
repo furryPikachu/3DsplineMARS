@@ -1,71 +1,9 @@
 \section{局部多项式曲面构造}
-% \noindent{\parbox{\textwidth}{{\wn{Question:}
-%       几阶的多项式曲面可以使得界面追踪精度达到4阶？}}}
-% \noindent{\fbox{\parbox{\textwidth}{{\wn{Question:}
-%        几阶的多项式曲面可以使得界面追踪精度达到4阶？
-%        \uline{u*}}}}}
- % \begin{itemize}
- % \item 推广一元多项式插值余项的推导方式？
- %   （$\mathrm{R}^m\rightarrow \mathrm{R}^n的Roller's Theorem$）
- % \item 参考张量曲面的误差分析
- % \item 转化成点在曲线上分析？
- % \end{itemize}
+\label{sec:localSurface}
 \begin{rem}
   由于我们用于追踪流体界面的点在空间上是散乱分布的，
   而且已经有三角剖分的结构，因此我们考虑基于三角剖分的二维样条函数。
 \end{rem}
-\subsection{Bernstein 基多项式}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Constants
-% a.向前追踪边界上的示踪点b.如果下一时刻的三角性边长大于$h_L$,
-% 回溯原来的三角形，在原来的三角形边长中增加中点对应的插值曲面上的点作为新的示踪点
-
-%  插值曲面的构造。
-
-% 将三角网格点投影在x-y平面，向外找star上的示踪点投影到x-y平面。
-% 如果一层star没有合适的十个点就向外再裹一层。
-
-% 取最外面的三个点构成包裹的三角形T，
-% 运用三角形的重心坐标和Bernstein basis polynomials of degree d relative
-% to T,
-\begin{nota}
-  $d$阶多项式空间
-  \begin{displaymath}
-{\cal P}_d:=\left\{ p(x,y) = \sum_{0\leq i+j\leq d}c_{ij}x^iy^j\right\}.
-  \end{displaymath}
-\end{nota}
-\begin{defn}
-  给定整数$d>0$,和三角形$T$相关的$d$阶 Bernstein 基多项式定义为
-  \begin{displaymath}
-    B^d_{ijk}:=\frac{d!}{i!j!k!}b^i_1b_2^jb_3^k,\quad i+j+k=d,
-  \end{displaymath}
-  $i,j,k$是非负整数。
-\end{defn}
-\begin{prop}
-  Bernstein基多项式性质:
-  \begin{enumerate}
-  \item $ 0\leq B_{ijk}^d(x,y)\leq 1 \quad (x,y) \in T,$
-  \item $ \sum_{i+j+k=d}B_{ijk}^d(x,y) \equiv 1\quad (x,y)\in T.$
-  \end{enumerate}
-\end{prop}
-
-
-\begin{lem}
-  多项式 $\left\{ B^d_{ijk}\right\}$线性独立，
-  且构成$d$次多项式${\cal P}_d$线性空间的一组基，维数是
-  $\begin{pmatrix}
-    d+2\\ 2
-  \end{pmatrix}$。
-\end{lem}
-
-% \begin{nota}
-%   ${\cal S}^0_d(\triangle):=\{s\in C^0(\Omega):s|_{T_i}\in{\cal P}_d ,
-%   \quad i=1,...,n_t\}.$
-% \end{nota}
-% \begin{prop}  \begin{displaymath}
-% \textmd{dim} {\cal S}^0_d(\triangle)=n_v+(d-1)n_e+\frac{(d-1)(d-2)}{2}n_t,
-% \end{displaymath}
-% 其中，$n_v,n_e$和$n_t$分别是三角剖分的点、边和三角形个数。
-% \end{prop}
 
 \begin{rem}
   为了达到四阶精度，我们用$p\in {\cal P}_3$
@@ -156,7 +94,7 @@
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.35\linewidth]{images/tri}
+  \includegraphics[width=0.35\linewidth]{fig/tri}
   \caption{加密网格的方法}
 \end{figure}
 \begin{table}[htbp]
